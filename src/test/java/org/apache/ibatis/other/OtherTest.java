@@ -1,7 +1,5 @@
 package org.apache.ibatis.other;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -11,20 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OtherTest {
 
   public static void main(String[] args) {
-    Map<String, Object> map = new HashMap<>();
-//    final Object value = map.get("key");
-//    if (value == null) {
-//      map.put("key", new Object());
-//    }
-//
-//    System.out.println(map);
-
-    Object va = map.computeIfAbsent("key", k -> new Object());
-//    System.out.println(va);
-//    System.out.println(map);
-
-
-
+    String s="s";
+    String a="a";
+    String b="b";
+    String c=a+b+s;
   }
 
   private ConcurrentHashMap<Integer,Object> concurrentHashMap=new ConcurrentHashMap();

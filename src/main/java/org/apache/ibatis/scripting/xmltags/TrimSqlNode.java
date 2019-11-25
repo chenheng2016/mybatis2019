@@ -15,16 +15,13 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.apache.ibatis.session.Configuration;
 
+import java.util.*;
+
 /**
+ * where和set是trim的子类
+ *
  * @author Clinton Begin
  */
 public class TrimSqlNode implements SqlNode {
@@ -32,7 +29,9 @@ public class TrimSqlNode implements SqlNode {
   private final SqlNode contents;
   private final String prefix;
   private final String suffix;
+  //使用|分隔，最后会转成大写
   private final List<String> prefixesToOverride;
+  //使用|分隔，最后会转成大写
   private final List<String> suffixesToOverride;
   private final Configuration configuration;
 

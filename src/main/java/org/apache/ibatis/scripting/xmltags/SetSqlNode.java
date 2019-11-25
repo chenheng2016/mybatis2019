@@ -15,10 +15,10 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.session.Configuration;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
@@ -27,6 +27,9 @@ public class SetSqlNode extends TrimSqlNode {
 
   private static final List<String> COMMA = Collections.singletonList(",");
 
+  /**
+   * 前缀是set,覆盖的是前面或后面的，
+   */
   public SetSqlNode(Configuration configuration,SqlNode contents) {
     super(configuration, contents, "SET", COMMA, null, COMMA);
   }

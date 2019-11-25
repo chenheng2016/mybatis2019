@@ -85,6 +85,7 @@ public class MapperAnnotationBuilder {
     //判断是否加载过
     if (!configuration.isResourceLoaded(resource)) {
       //TODO
+      //解析xml形式的
       loadXmlResource();
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
@@ -92,14 +93,14 @@ public class MapperAnnotationBuilder {
       parseCache();
       //解析缓存引用
       parseCacheRef();
-      //获取所有的method包括父接口的
+      //获取所有的method包括父接口的public方法
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
           // issue #237
           if (!method.isBridge()) {
-            //解析并创建MappedStatement并加入到configuration中
-            //TODO
+            //除了桥接方法
+            //解析注解类型的并加入到configiration
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {
@@ -140,6 +141,7 @@ public class MapperAnnotationBuilder {
         try {
           inputStream = Resources.getResourceAsStream(type.getClassLoader(), xmlResource);
         } catch (IOException e2) {
+          //可能是通过注解实现的
           // ignore, resource is not required
         }
       }

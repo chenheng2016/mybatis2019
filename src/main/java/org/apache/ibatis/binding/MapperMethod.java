@@ -15,15 +15,6 @@
  */
 package org.apache.ibatis.binding;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.apache.ibatis.annotations.Flush;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.cursor.Cursor;
@@ -37,6 +28,15 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Clinton Begin
@@ -58,7 +58,9 @@ public class MapperMethod {
     Object result;
     switch (command.getType()) {
       case INSERT: {
+        //转换参数
         Object param = method.convertArgsToSqlCommandParam(args);
+        //如果是void则返回null,如果是int/integer返回受影响的行数，如果是boolean,则返回受影响的行数是否大于0，否则抛出异常
         result = rowCountResult(sqlSession.insert(command.getName(), param));
         break;
       }
@@ -259,6 +261,7 @@ public class MapperMethod {
       } else if (mapperInterface.equals(declaringClass)) {
         return null;
       }
+      //递归查询
       for (Class<?> superInterface : mapperInterface.getInterfaces()) {
         if (declaringClass.isAssignableFrom(superInterface)) {
           MappedStatement ms = resolveMappedStatement(superInterface, methodName,
@@ -297,10 +300,16 @@ public class MapperMethod {
       this.returnsVoid = void.class.equals(this.returnType);
       this.returnsMany = configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray();
       this.returnsCursor = Cursor.class.equals(this.returnType);
+      //支持返回值是optional
       this.returnsOptional = Optional.class.equals(this.returnType);
+
+      //返回值是map，并且使用了@MapKey注解
       this.mapKey = getMapKey(method);
       this.returnsMap = this.mapKey != null;
+
+      //从0开始
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
+      //从0开始
       this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
       this.paramNameResolver = new ParamNameResolver(configuration, method);
     }

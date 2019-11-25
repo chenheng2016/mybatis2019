@@ -74,12 +74,13 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
-      //解析mapper
+      //解析mapper TODO
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
       bindMapperForNamespace();
     }
 
+    //解析有问题的
     parsePendingResultMaps();
     parsePendingCacheRefs();
     parsePendingStatements();
@@ -96,11 +97,15 @@ public class XMLMapperBuilder extends BaseBuilder {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
+      //解析缓存引用就一个属性namespace
       cacheRefElement(context.evalNode("cache-ref"));
+      //解析缓存
       cacheElement(context.evalNode("cache"));
       //已被废弃！老式风格的参数映射。更好的办法是使用内联参数，此元素可能在将来被移除。文档中不会介绍此元素
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      //TODO
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      //处理sql片段
       sqlElement(context.evalNodes("/mapper/sql"));
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
@@ -108,7 +113,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  //构建crud标签
   private void buildStatementFromContext(List<XNode> list) {
+    //仍然分为是否有databaseId
     if (configuration.getDatabaseId() != null) {
       buildStatementFromContext(list, configuration.getDatabaseId());
     }
@@ -240,12 +247,15 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings, Class<?> enclosingType) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+    //先取type(一般是去这个)在取ofType再取resultType再取javaType
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
     Class<?> typeClass = resolveClass(type);
     if (typeClass == null) {
+      //从association的property属性值中取得
+      //或如果是case，返回enclosingType
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
     }
     Discriminator discriminator = null;
@@ -320,7 +330,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     return builderAssistant.buildDiscriminator(resultType, column, javaTypeClass, jdbcTypeEnum, typeHandlerClass, discriminatorMap);
   }
 
+  //解析sql片段
   private void sqlElement(List<XNode> list) {
+    //如果有databaseId则使用
     if (configuration.getDatabaseId() != null) {
       sqlElement(list, configuration.getDatabaseId());
     }
@@ -331,7 +343,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     for (XNode context : list) {
       String databaseId = context.getStringAttribute("databaseId");
       String id = context.getStringAttribute("id");
-      id = builderAssistant.applyCurrentNamespace(id, false);
+      id = builderAssistant.applyCurrentNamespace(id, false);//返回namespace+.+id
       if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
         sqlFragments.put(id, context);
       }
@@ -339,9 +351,11 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
+    //配置configuraion中的(从databaseIdProvider和environment中获取的)databaseId和sql的databaseId相同
     if (requiredDatabaseId != null) {
       return requiredDatabaseId.equals(databaseId);
     }
+    //configuration中的databaseId为空，sql片段中的不为空，则返回false
     if (databaseId != null) {
       return false;
     }
@@ -349,6 +363,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       return true;
     }
     // skip this fragment if there is a previous one with a not null databaseId
+    //只有有过，只要databaseId不为空即可
     XNode context = this.sqlFragments.get(id);
     return context.getStringAttribute("databaseId") == null;
   }
@@ -356,6 +371,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, List<ResultFlag> flags) throws Exception {
     String property;
     if (flags.contains(ResultFlag.CONSTRUCTOR)) {
+      //含有constructor使用name属性
       property = context.getStringAttribute("name");
     } else {
       property = context.getStringAttribute("property");

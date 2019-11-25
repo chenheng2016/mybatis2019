@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
+ * 重点分析
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
  *
@@ -73,6 +74,7 @@ public class Reflector {
     //过滤参数为空并且是get或is开头的方法
     Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
       .forEach(m -> addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m));
+    //主要是去除桥接方法
     resolveGetterConflicts(conflictingGetters);
   }
 
@@ -147,6 +149,7 @@ public class Reflector {
       for (Method setter : setters) {
         if (!isGetterAmbiguous && setter.getParameterTypes()[0].equals(getterType)) {
           // should be the best match
+          //get的返回值类型和set的第一个参数类型相同，则匹配到了
           match = setter;
           break;
         }
@@ -165,6 +168,7 @@ public class Reflector {
     if (setter1 == null) {
       return setter2;
     }
+    //选择是子类的
     Class<?> paramType1 = setter1.getParameterTypes()[0];
     Class<?> paramType2 = setter2.getParameterTypes()[0];
     if (paramType1.isAssignableFrom(paramType2)) {
@@ -172,6 +176,7 @@ public class Reflector {
     } else if (paramType2.isAssignableFrom(paramType1)) {
       return setter1;
     }
+    //没有关系的选择setter1
     MethodInvoker invoker = new AmbiguousMethodInvoker(setter1,
         MessageFormat.format(
             "Ambiguous setters defined for property ''{0}'' in class ''{1}'' with types ''{2}'' and ''{3}''.",

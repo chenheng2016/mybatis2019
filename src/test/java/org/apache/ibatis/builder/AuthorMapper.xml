@@ -64,12 +64,14 @@
 		</constructor>
 	</resultMap>
 
+  <sql id="xxx"></sql>
+
 	<select id="selectAllAuthors" resultType="org.apache.ibatis.domain.blog.Author">
-		select * from author
+		select <include refid="com.github.pagehelper.mapper.CountryMapper.Example_Where_Clause"></include>* from author
 	</select>
 
 	<select id="selectAllAuthorsSet" resultType="org.apache.ibatis.domain.blog.Author">
-		select * from author
+		select <include refid="com.github.pagehelper.mapper.CountryMapper.Example_Where_Clause" /> * from author
 	</select>
 
 	<select id="selectAllAuthorsVector" resultType="org.apache.ibatis.domain.blog.Author">

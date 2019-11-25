@@ -102,7 +102,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       //issue #117 read properties first
       //解析properties文件
       propertiesElement(root.evalNode("properties"));
-      //解析setting文件 TODO
+      //解析setting文件
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       //加载容器内的各种资源，比如jar或者class文件
       loadCustomVfs(settings);
@@ -145,6 +145,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
       //类型处理器 主要是javaType和jdbcType之间的转换
       typeHandlerElement(root.evalNode("typeHandlers"));
+      //解析mapper 这个是核心
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -363,6 +364,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     Environment environment = configuration.getEnvironment();
     if (environment != null && databaseIdProvider != null) {
       String databaseId = databaseIdProvider.getDatabaseId(environment.getDataSource());
+      //从数据源中查找
       configuration.setDatabaseId(databaseId);
     }
   }

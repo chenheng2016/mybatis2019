@@ -75,6 +75,7 @@ public class GenericTokenParser {
           builder.append(src, start, src.length - start);
           offset = src.length;
         } else {
+          //调用才是true(既有替换才行#{tableName})
           builder.append(handler.handleToken(expression.toString()));
           offset = end + closeToken.length();
         }

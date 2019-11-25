@@ -15,16 +15,21 @@
  */
 package org.apache.ibatis.mapping;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.ibatis.session.Configuration;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.Configuration;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * 测试完毕
+ * 只看前面的是否存在
+ */
 class BoundSqlTest {
 
   @Test

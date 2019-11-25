@@ -15,16 +15,14 @@
  */
 package org.apache.ibatis.reflection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.ibatis.domain.misc.RichType;
+import org.apache.ibatis.domain.misc.generics.GenericConcrete;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.domain.misc.RichType;
-import org.apache.ibatis.domain.misc.generics.GenericConcrete;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MetaClassTest {
 
@@ -98,7 +96,7 @@ class MetaClassTest {
     assertEquals(String.class, meta.getGetterType("richProperty"));
     assertEquals(List.class, meta.getGetterType("richList"));
     assertEquals(Map.class, meta.getGetterType("richMap"));
-    assertEquals(List.class, meta.getGetterType("richList[0]"));
+    assertEquals(List.class, meta.getGetterType("richList[0]"));//richList[0]和richList一样
 
     assertEquals(RichType.class, meta.getGetterType("richType"));
     assertEquals(String.class, meta.getGetterType("richType.richField"));
@@ -138,6 +136,8 @@ class MetaClassTest {
   void shouldFindPropertyName() {
     ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
     MetaClass meta = MetaClass.forClass(RichType.class, reflectorFactory);
+    //meta.findProperty("RICHfield") 会从map中取值，并将属性转成大写，
+    //org.apache.ibatis.reflection.Reflector.Reflectorz(Class clazz) 将属性转成大写放入了map中
     assertEquals("richField", meta.findProperty("RICHfield"));
   }
 

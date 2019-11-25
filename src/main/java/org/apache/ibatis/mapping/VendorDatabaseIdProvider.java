@@ -63,14 +63,16 @@ public class VendorDatabaseIdProvider implements DatabaseIdProvider {
     //如果设置了properties，则先从properties取值
     if (this.properties != null) {
       for (Map.Entry<Object, Object> property : properties.entrySet()) {
-        //不使用精确匹配
+        //不使用精确匹配，找到了就用properties配置的名字
         if (productName.contains((String) property.getKey())) {
           return (String) property.getValue();
         }
       }
       // no match, return null
+      //找不到就返回null
       return null;
     }
+    //没配置就用数据库全名
     return productName;
   }
 
