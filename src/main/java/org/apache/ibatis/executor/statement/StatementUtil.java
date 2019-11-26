@@ -44,6 +44,7 @@ public class StatementUtil {
     if (transactionTimeout == null) {
       return;
     }
+    //查询时间为空或事物时间小于查询时间，则设置语句的查询时间为事物时间
     if (queryTimeout == null || queryTimeout == 0 || transactionTimeout < queryTimeout) {
       statement.setQueryTimeout(transactionTimeout);
     }

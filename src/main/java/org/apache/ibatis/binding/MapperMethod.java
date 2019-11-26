@@ -74,17 +74,22 @@ public class MapperMethod {
         result = rowCountResult(sqlSession.delete(command.getName(), param));
         break;
       }
+      //上面的三个实际上调用的都是update
       case SELECT:
         if (method.returnsVoid() && method.hasResultHandler()) {
           executeWithResultHandler(sqlSession, args);
           result = null;
         } else if (method.returnsMany()) {
+          //多个值
           result = executeForMany(sqlSession, args);
         } else if (method.returnsMap()) {
+          //返回map。直接上返回了list在转成map,键是@MapKey中指定的名字
           result = executeForMap(sqlSession, args);
         } else if (method.returnsCursor()) {
+          //返回游标  存储过程中用到
           result = executeForCursor(sqlSession, args);
         } else {
+          //返回一条记录
           Object param = method.convertArgsToSqlCommandParam(args);
           result = sqlSession.selectOne(command.getName(), param);
           if (method.returnsOptional()
@@ -149,6 +154,7 @@ public class MapperMethod {
       result = sqlSession.selectList(command.getName(), param);
     }
     // issue #510 Collections & arrays support
+    //如果接口的的返回值不是集合，则如果接口的返回值是数组，则转为数组，否则转为集合
     if (!method.getReturnType().isAssignableFrom(result.getClass())) {
       if (method.getReturnType().isArray()) {
         return convertToArray(result);

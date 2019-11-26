@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.executor.statement;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
@@ -32,6 +28,10 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @author Clinton Begin
@@ -107,6 +107,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     } else if (configuration.getDefaultStatementTimeout() != null) {
       queryTimeout = configuration.getDefaultStatementTimeout();
     }
+    //优先使用mappedStatement中的查询时间，然后使用configuration中的
     if (queryTimeout != null) {
       stmt.setQueryTimeout(queryTimeout);
     }
@@ -114,6 +115,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   }
 
   protected void setFetchSize(Statement stmt) throws SQLException {
+    //优先使用mappedStatement中的，然后使用全局配置的
     Integer fetchSize = mappedStatement.getFetchSize();
     if (fetchSize != null) {
       stmt.setFetchSize(fetchSize);
